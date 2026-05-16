@@ -44,9 +44,11 @@ class VisualPatternSystem:
         try:
             # Fetch 6 months of data
             data = yf.download(symbol, period="6mo", interval="1d", progress=False)
+            if isinstance(data.columns, pd.MultiIndex):
+                data.columns = data.columns.get_level_values(0)
             if data.empty:
                 return None
-            
+
             # Detect patterns
             patterns = self.detect_all_patterns(data)
             

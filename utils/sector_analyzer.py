@@ -66,6 +66,8 @@ def get_sector_performance():
         for stock in sector_stocks[:10]:  # Limit to 10 stocks per sector
             try:
                 data = yf.download(stock, period='1mo', interval='1d', progress=False)
+                if isinstance(data.columns, pd.MultiIndex):
+                    data.columns = data.columns.get_level_values(0)
                 if not data.empty:
                     start_price = data['Close'].iloc[0]
                     current_price = data['Close'].iloc[-1]
@@ -97,7 +99,9 @@ def get_market_conditions():
     try:
         # Get Nifty 50 data
         nifty = yf.download('^NSEI', period='1mo', interval='1d', progress=False)
-        
+        if isinstance(nifty.columns, pd.MultiIndex):
+            nifty.columns = nifty.columns.get_level_values(0)
+
         if nifty.empty:
             return get_default_market_conditions()
         

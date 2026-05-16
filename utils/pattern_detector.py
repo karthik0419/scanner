@@ -40,11 +40,13 @@ class PatternDetector:
         try:
             # Fetch data
             data = yf.download(symbol, period="6mo", interval="1d", progress=False)
+            if isinstance(data.columns, pd.MultiIndex):
+                data.columns = data.columns.get_level_values(0)
             if data.empty:
                 return None
-            
+
             detected_patterns = []
-            
+
             # Cup & Handle detection
             cup_handle = self.detect_cup_handle(data)
             if cup_handle:

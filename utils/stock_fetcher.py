@@ -69,6 +69,8 @@ class HighQualityStockFetcher:
         for stock in stocks:
             try:
                 data = yf.download(stock, period="1mo", interval="1d", progress=False)
+                if isinstance(data.columns, pd.MultiIndex):
+                    data.columns = data.columns.get_level_values(0)
                 if not data.empty:
                     avg_volume = data['Volume'].tail(20).mean()
                     if avg_volume >= min_avg_volume:
@@ -102,6 +104,8 @@ class HighQualityStockFetcher:
         for stock in stocks:
             try:
                 data = yf.download(stock, period="1mo", interval="1d", progress=False)
+                if isinstance(data.columns, pd.MultiIndex):
+                    data.columns = data.columns.get_level_values(0)
                 if not data.empty:
                     returns = data['Close'].pct_change().dropna()
                     volatility = returns.std()
@@ -120,6 +124,8 @@ class HighQualityStockFetcher:
         for stock in stocks:
             try:
                 data = yf.download(stock, period=f"{days+5}d", interval="1d", progress=False)
+                if isinstance(data.columns, pd.MultiIndex):
+                    data.columns = data.columns.get_level_values(0)
                 if not data.empty:
                     current_price = data['Close'].iloc[-1]
                     old_price = data['Close'].iloc[-(days+1)]
@@ -205,9 +211,11 @@ class HighQualityStockFetcher:
         """Analyze a single stock for quality metrics"""
         try:
             data = yf.download(stock, period="1mo", interval="1d", progress=False)
+            if isinstance(data.columns, pd.MultiIndex):
+                data.columns = data.columns.get_level_values(0)
             ticker = yf.Ticker(stock)
             info = ticker.info
-            
+
             if data.empty:
                 return None
             
