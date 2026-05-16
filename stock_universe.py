@@ -23,6 +23,7 @@ warnings.filterwarnings("ignore")
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from data.fetcher import fetch_all_parallel
+from data.nse_universe import fetch_nse_universe
 
 
 def load_list(path):
@@ -79,15 +80,24 @@ def main():
     parser.add_argument("--top",      type=int, default=80)
     args = parser.parse_args()
 
-    universe = load_list(args.universe)
     backbone = load_list(args.backbone)
 
+    # [v3-change-4] Live NSE universe from niftyindices.com instead of static nifty500.txt
+    # Covers all 25+ NSE sector indices + hardcoded sectors (Defense, Textiles, Agri etc.)
+    # Falls back to nifty500.txt if network unavailable. Cached 72 hours.
+    print("Fetching live NSE universe from niftyindices.com (cached 72h)...")
+    universe = fetch_nse_universe()
+
     if not universe:
-        print(f"No stocks in {args.universe}")
+        print("Live fetch failed — falling back to nifty500.txt")
+        universe = load_list(args.universe)
+
+    if not universe:
+        print(f"No stocks found. Check nifty500.txt or network.")
         sys.exit(1)
 
-    print(f"Building universe: {len(universe)} stocks in nifty500 + {len(backbone)} backbone")
-    print("Fetching data in parallel (cached)...")
+    print(f"Universe: {len(universe)} live NSE stocks + {len(backbone)} backbone")
+    print("Scoring momentum (fetching price data, cached)...")
 
     # Fetch all in parallel
     all_symbols = list(set(universe + backbone))
