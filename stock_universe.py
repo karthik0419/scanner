@@ -122,8 +122,13 @@ def main():
 
     print(f"\nUniverse built: {len(final)} stocks -> saved to {args.output}")
     print(f"Top 10 momentum picks today:")
-    for sym, sc in universe_scored[:10]:
-        print(f"  {sym:20s} score={sc}")
+    seen = set()
+    for sym, sc in universe_scored:
+        if sym not in seen:
+            seen.add(sym)
+            print(f"  {sym:20s} score={sc}")
+        if len(seen) == 10:
+            break
 
 
 if __name__ == "__main__":

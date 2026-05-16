@@ -190,6 +190,19 @@ def analyse_stock(symbol, df=None, df_nifty=None):
     elif cmp > ma20:
         score += 5
 
+    # [v3-change-1] S&R patterns need stronger confirmation to qualify
+    # Backtest showed S&R Breakout 30.6% win / S&R Support 29.7% win — too low without extra filters
+    if pattern in ("S&R Breakout", "S&R Support") and score < 60:
+        return None
+
+    # [v3-change-2] ATR-based stop loss — replaces fixed pattern stop when it's too tight
+    # Backtest showed 52% of trades dying at stop; ATR stop gives more breathing room
+    atr_stop = cmp - (2.0 * atr_val)
+    if pattern_result and stop_loss > atr_stop:
+        pass  # pattern stop is already wider, keep it
+    else:
+        stop_loss = round(atr_stop, 2)  # use ATR stop if pattern stop was too tight
+
     # ── Risk/Reward ──
     risk_amt = cmp - stop_loss
     reward_amt = target - cmp
