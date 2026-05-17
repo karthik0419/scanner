@@ -52,7 +52,7 @@ def _detect_cup_handle(df, min_bars, cup_bars, handle_bars,
 
     # Handle retracement must be tighter than cup
     handle_depth = (handle_high - handle_low) / cup_high
-    if handle_depth > cup_depth * 0.65:
+    if handle_depth > cup_depth * 0.90:
         return None
 
     # Breakout = right rim or handle high, whichever is higher
@@ -91,12 +91,12 @@ def _detect_cup_handle(df, min_bars, cup_bars, handle_bars,
 def detect_cup_handle(df):
     return _detect_cup_handle(
         df,
-        min_bars   = 80,
-        cup_bars   = 60,   # ~3 months on daily
-        handle_bars = 15,  # ~3 weeks handle
-        min_depth  = 0.12, # lowered from 0.15 — catches shallower cups like BAJAJ-AUTO
-        max_depth  = 0.60, # raised from 0.50 — catches deeper cups like LAURUSLABS
-        near_pct   = 0.08, # raised from 0.05 — within 8% of breakout
+        min_bars    = 140,
+        cup_bars    = 120,  # ~6 months on daily (was 60 ~3 months)
+        handle_bars = 15,   # ~3 weeks handle
+        min_depth   = 0.12,
+        max_depth   = 0.60,
+        near_pct    = 0.08,
     )
 
 

@@ -113,8 +113,8 @@ def fetch_data(symbol, period="6mo", interval="1d"):
 # -----------------------
 def fetch_multi_tf(symbol):
     try:
-        # Daily — 6 months
-        df_daily = _fetch_nse(symbol, days=180)
+        # Daily — 12 months (increased from 6mo to catch longer Cup & Handle formations)
+        df_daily = _fetch_nse(symbol, days=365)
         if df_daily is None or df_daily.empty:
             return None, None, None
 

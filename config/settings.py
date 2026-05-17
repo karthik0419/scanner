@@ -2,7 +2,7 @@
 # DATA SETTINGS
 # ==============================
 
-DATA_PERIOD = "6mo"
+DATA_PERIOD = "12mo"
 DATA_INTERVAL = "1d"
 
 
@@ -42,4 +42,4 @@ NEAR_BREAKOUT_THRESHOLD = 0.03
 # FILTERS
 # ==============================
 
-MIN_CANDLES = 60
+MIN_CANDLES = 140
