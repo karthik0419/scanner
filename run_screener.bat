@@ -1,5 +1,5 @@
 @echo off
-cd /d "C:\Users\91814\Desktop\claude\swing-screener-v3"
+cd /d "C:\Users\91814\Desktop\claude\scanner"
 
 echo ============================================
 echo   SWING SCREENER v3 — Manual Run
