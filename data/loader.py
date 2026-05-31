@@ -56,7 +56,7 @@ def _fetch_nse(symbol, days=180):
     try:
         raw = nse_stock_df(symbol=sym, from_date=from_dt, to_date=to_dt, series="EQ")
     except Exception as e:
-        print(f"  [NSE] fetch failed for {sym}: {e}")
+        pass  # yfinance fallback handles this
 
     if raw is not None and not raw.empty:
         raw = raw.rename(columns={
