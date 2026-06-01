@@ -5,11 +5,17 @@ Replaces sequential _fetch_nse calls.
 
 import os
 import sys
+import logging
 import pandas as pd
 from datetime import date, datetime, timedelta
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import warnings
 warnings.filterwarnings("ignore")
+
+# Kill yfinance noise at the root
+for _n in ["yfinance","yfinance.base","yfinance.utils","yfinance.ticker",
+           "urllib3","urllib3.connectionpool","peewee","requests"]:
+    logging.getLogger(_n).setLevel(logging.CRITICAL)
 
 # Suppress yfinance download noise (404s, delisted warnings)
 import contextlib, io

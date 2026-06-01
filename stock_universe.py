@@ -20,9 +20,13 @@ import pandas as pd
 import numpy as np
 
 warnings.filterwarnings("ignore")
-logging.getLogger("yfinance").setLevel(logging.CRITICAL)
-logging.getLogger("urllib3").setLevel(logging.CRITICAL)
-logging.getLogger("peewee").setLevel(logging.CRITICAL)
+
+# Silence all yfinance / urllib noise completely
+for _log in ["yfinance", "yfinance.base", "yfinance.utils", "yfinance.ticker",
+             "urllib3", "urllib3.connectionpool", "peewee", "requests", "httpx"]:
+    logging.getLogger(_log).setLevel(logging.CRITICAL)
+logging.disable(logging.WARNING)
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from data.fetcher import fetch_all_parallel
