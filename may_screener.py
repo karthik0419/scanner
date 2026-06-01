@@ -268,7 +268,7 @@ def main():
     parser.add_argument("--symbols", nargs="+")
     parser.add_argument("--top", type=int, default=15)
     parser.add_argument("--min-score", type=float, default=30)
-    today_str = date.today().strftime("%Y-%m-%d")
+    today_str = date.today().strftime("%Y-%m-%d_%H%M")
     os.makedirs("results", exist_ok=True)
     parser.add_argument("--output", default=f"results/results_{today_str}.csv")
     args = parser.parse_args()
