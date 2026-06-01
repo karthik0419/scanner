@@ -8,7 +8,7 @@ echo ============================================
 echo.
 
 echo [1/4] Building today's universe (live NSE + momentum)...
-python stock_universe.py --top 80
+python stock_universe.py --top 150
 if errorlevel 1 (
     echo ERROR: stock_universe.py failed.
     pause

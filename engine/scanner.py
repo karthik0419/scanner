@@ -16,6 +16,7 @@ from utils.entry_4h import detect_4h_entry
 from utils.pattern_validator import validate_pattern_quality
 from utils.target_calculator import calculate_advanced_targets
 from utils.sector_analyzer import analyze_stock_sector, get_market_conditions, filter_by_market_conditions
+from utils.sector_rotation import get_sector_bonus, print_sector_heatmap
 from utils.performance_tracker import get_pattern_success_rate
 from utils.verification_tools import generate_full_verification_report
 from utils.entry_confirmation import confirm_entry_signal
@@ -169,9 +170,17 @@ def scan_stock(symbol):
     if score < 10:
         return None
 
-    # Add sector analysis
+    # Sector rotation bonus
+    sector_name, sector_signal, sector_bonus = get_sector_bonus(symbol)
+    score += sector_bonus
+
+    # Add sector analysis (use rotation sector if known, fallback to old mapper)
     sector_analysis = analyze_stock_sector(symbol)
     result.update(sector_analysis)
+    if sector_name != 'Unknown':
+        result['sector'] = sector_name
+    result['sector_rotation'] = sector_signal
+    result['sector_bonus']    = sector_bonus
 
     # Add pattern success rate from historical data
     pattern_success_rate, pattern_info = get_pattern_success_rate(result["pattern"])

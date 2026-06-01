@@ -20,11 +20,11 @@ def calculate_advanced_targets(df, pattern_type, result):
     
     if pattern_type == "Breakout Retest":
         return calculate_retest_targets(df, result, atr)
-    elif pattern_type == "Double Bottom":
+    elif "Double Bottom" in pattern_type:
         return calculate_double_bottom_targets(df, result, atr)
-    elif pattern_type == "Double Top":
-        return calculate_double_top_targets(df, result, atr)
-    elif pattern_type == "Cup & Handle":
+    elif "Double Top" in pattern_type:
+        return default_targets(result, atr)
+    elif "Cup & Handle" in pattern_type:
         return calculate_cup_handle_targets(df, result, atr)
     elif pattern_type == "Darvas Box":
         return calculate_darvas_box_targets(df, result, atr)

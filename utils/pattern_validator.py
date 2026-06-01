@@ -24,8 +24,8 @@ def validate_pattern_quality(df, pattern_type, result):
     validation_score += trend_score * 0.3
     validation_reasons.extend(trend_reasons)
     
-    # Pattern is valid if score > 60
-    is_valid = validation_score >= 60
+    # Pattern is valid if score > 35 (relaxed from 60 — volume lags on weekly setups)
+    is_valid = validation_score >= 35
     
     return is_valid, validation_score, validation_reasons
 
