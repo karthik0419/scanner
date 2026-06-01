@@ -259,7 +259,8 @@ def main():
     parser.add_argument("--top", type=int, default=15)
     parser.add_argument("--min-score", type=float, default=30)
     today_str = date.today().strftime("%Y-%m-%d")
-    parser.add_argument("--output", default=f"results_{today_str}.csv")
+    os.makedirs("results", exist_ok=True)
+    parser.add_argument("--output", default=f"results/results_{today_str}.csv")
     args = parser.parse_args()
 
     symbols = args.symbols if args.symbols else load_stocks(args.stocks)
