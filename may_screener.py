@@ -268,6 +268,13 @@ def main():
         print("No symbols. Use --symbols or a stocks file.")
         sys.exit(1)
 
+    # Show sector heatmap before scan
+    try:
+        from utils.sector_rotation import print_sector_heatmap
+        print_sector_heatmap()
+    except Exception:
+        pass
+
     # Pre-fetch all stocks in parallel
     print(f"Fetching data for {len(symbols)} stocks in parallel...")
     stock_data = fetch_all_parallel(symbols, days=400, max_workers=10)
