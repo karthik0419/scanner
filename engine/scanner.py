@@ -191,9 +191,14 @@ def scan_stock(symbol):
     # Generate entry confirmation (Step 7)
     entry_confirmation = confirm_entry_signal(df_daily, df_4h, df_weekly, result)
     
+    # Normalise score to 0-100
+    MAX_POSSIBLE_SCORE = 200
+    normalised_score = round(min(score / MAX_POSSIBLE_SCORE * 100, 100), 1)
+
     result.update({
         "symbol": symbol,
-        "score": round(score, 2),
+        "score": normalised_score,
+        "raw_score": round(score, 2),
         "rr": round(rr, 2),
         "upside_pct": round(upside, 2),
         "risk_pct": round(risk, 2),
