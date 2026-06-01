@@ -15,11 +15,14 @@ Usage:
   python stock_universe.py --top 100  # top 100 momentum stocks
 """
 
-import os, sys, argparse, warnings
+import os, sys, argparse, warnings, logging
 import pandas as pd
 import numpy as np
 
 warnings.filterwarnings("ignore")
+logging.getLogger("yfinance").setLevel(logging.CRITICAL)
+logging.getLogger("urllib3").setLevel(logging.CRITICAL)
+logging.getLogger("peewee").setLevel(logging.CRITICAL)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from data.fetcher import fetch_all_parallel

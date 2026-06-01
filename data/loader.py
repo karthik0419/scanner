@@ -70,13 +70,14 @@ def _fetch_nse(symbol, days=180):
         _cache_save(symbol, days, result)
         return result
 
-    # Fallback: yfinance
+    # Fallback: yfinance (silent)
     try:
-        import yfinance as yf
+        import yfinance as yf, contextlib, io
         yf_sym = symbol if symbol.endswith(".NS") else sym + ".NS"
         period_map = {180: "6mo", 400: "2y", 730: "3y"}
         period = period_map.get(days) or ("2y" if days <= 400 else "5y")
-        df = yf.download(yf_sym, period=period, interval="1d", progress=False, auto_adjust=True)
+        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+            df = yf.download(yf_sym, period=period, interval="1d", progress=False, auto_adjust=True)
         if df is not None and not df.empty:
             if isinstance(df.columns, pd.MultiIndex):
                 df.columns = df.columns.get_level_values(0)
@@ -131,6 +132,5 @@ def fetch_multi_tf(symbol):
 
         return df_daily, df_weekly, df_4h
 
-    except Exception as e:
-        print(f"Error fetching {symbol}: {e}")
+    except Exception:
         return None, None, None

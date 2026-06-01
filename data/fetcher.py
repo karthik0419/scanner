@@ -4,11 +4,23 @@ Replaces sequential _fetch_nse calls.
 """
 
 import os
+import sys
 import pandas as pd
 from datetime import date, datetime, timedelta
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import warnings
+warnings.filterwarnings("ignore")
+
+# Suppress yfinance download noise (404s, delisted warnings)
+import contextlib, io
 
 from data.loader import _fetch_nse, _resample_weekly
+
+
+@contextlib.contextmanager
+def _silence():
+    with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+        yield
 
 CACHE_DIR = os.path.join(os.path.dirname(__file__), "..", "cache")
 os.makedirs(CACHE_DIR, exist_ok=True)
@@ -36,7 +48,8 @@ def fetch_cached(symbol, days=400):
         except Exception:
             pass
 
-    df = _fetch_nse(symbol, days=days)
+    with _silence():
+        df = _fetch_nse(symbol, days=days)
     if df is not None and not df.empty:
         df.to_csv(path)
     return df
