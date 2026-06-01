@@ -219,24 +219,34 @@ def analyse_stock(symbol, df=None, df_nifty=None):
     elif rr >= 1.5:
         score += 5
 
+    # Sector rotation context
+    try:
+        from utils.sector_rotation import get_sector_bonus
+        sector_name, sector_signal, sector_bonus = get_sector_bonus(symbol)
+        score += sector_bonus
+    except Exception:
+        sector_name, sector_signal, sector_bonus = "Unknown", "Unknown", 0
+
     return {
-        "symbol":       symbol,
-        "pattern":      pattern,
-        "status":       p_status,
-        "cmp":          round(cmp, 2),
-        "breakout":     round(breakout_level, 2),
-        "stop_loss":    round(stop_loss, 2),
-        "target":       round(target, 2),
-        "upside_%":     upside_pct,
-        "risk_%":       risk_pct,
-        "rr":           rr,
-        "rsi":          round(rsi_val, 1),
-        "rs_vs_nifty":  rs,
-        "vol_ratio":    vol_ratio,
-        "dist_52h_%":   dist_52h,
-        "atr":          round(atr_val, 2),
-        "score":        round(score, 1),
-        "reasons":      " | ".join(reasons),
+        "symbol":         symbol,
+        "pattern":        pattern,
+        "status":         p_status,
+        "cmp":            round(cmp, 2),
+        "breakout":       round(breakout_level, 2),
+        "stop_loss":      round(stop_loss, 2),
+        "target":         round(target, 2),
+        "upside_%":       upside_pct,
+        "risk_%":         risk_pct,
+        "rr":             rr,
+        "rsi":            round(rsi_val, 1),
+        "rs_vs_nifty":    rs,
+        "vol_ratio":      vol_ratio,
+        "dist_52h_%":     dist_52h,
+        "atr":            round(atr_val, 2),
+        "score":          round(score, 1),
+        "sector":         sector_name,
+        "sector_signal":  sector_signal,
+        "reasons":        " | ".join(reasons),
     }
 
 
