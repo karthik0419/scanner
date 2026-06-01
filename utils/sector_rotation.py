@@ -69,7 +69,23 @@ STOCK_SECTOR = {
     'JSWENERGY.NS':'Energy','PSPPROJECT.NS':'Infra','WELCORP.NS':'Infra',
 }
 
+# NSE sector → rotation sector mapping
+YF_SECTOR_MAP = {
+    'Basic Materials':          'Metals',
+    'Consumer Cyclical':        'Auto',
+    'Consumer Defensive':       'FMCG',
+    'Energy':                   'Energy',
+    'Financial Services':       'Banking',
+    'Healthcare':               'Pharma',
+    'Industrials':              'Infra',
+    'Real Estate':              'Realty',
+    'Technology':               'IT',
+    'Communication Services':   'Media',
+    'Utilities':                'Energy',
+}
+
 _cache = {}
+_sector_lookup_cache = {}
 
 
 def get_sector_heat(lookback_short=5, lookback_long=20):
@@ -125,10 +141,32 @@ def get_sector_heat(lookback_short=5, lookback_long=20):
 
 
 def get_stock_sector(symbol):
-    """Return sector name for a symbol. Handles with/without .NS suffix."""
+    """Return sector name. Checks hardcoded map first, then yfinance as fallback."""
+    global _sector_lookup_cache
     sym_ns  = symbol if symbol.endswith('.NS') else symbol + '.NS'
     sym_raw = symbol.replace('.NS','')
-    return STOCK_SECTOR.get(sym_ns, STOCK_SECTOR.get(sym_raw, 'Unknown'))
+
+    # 1. Hardcoded map (instant)
+    sec = STOCK_SECTOR.get(sym_ns) or STOCK_SECTOR.get(sym_raw)
+    if sec:
+        return sec
+
+    # 2. Session cache
+    if sym_ns in _sector_lookup_cache:
+        return _sector_lookup_cache[sym_ns]
+
+    # 3. yfinance info (slow but accurate — cached after first call)
+    try:
+        import yfinance as yf, contextlib, io
+        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+            info = yf.Ticker(sym_ns).info
+        yf_sector = info.get('sector', '')
+        mapped = YF_SECTOR_MAP.get(yf_sector, yf_sector or 'Unknown')
+        _sector_lookup_cache[sym_ns] = mapped
+        return mapped
+    except Exception:
+        _sector_lookup_cache[sym_ns] = 'Unknown'
+        return 'Unknown'
 
 
 def get_sector_bonus(symbol):
