@@ -130,6 +130,13 @@ def _try_one_cup_length(df, cup_bars, handle_bars,
         "neckline_kind": "descending" if slope_norm < -0.0005 else "flat",
         "cup_bars_used": cup_bars,
         "prev_above_bk": prev_above_bk,
+        # For chart annotation
+        "cup_start_idx":    len(df) - cup_bars - handle_bars,
+        "cup_end_idx":      len(df) - handle_bars - 1,
+        "handle_start_idx": len(df) - handle_bars,
+        "handle_end_idx":   len(df) - 1,
+        "cup_low":          round(cup_low, 2),
+        "cup_high":         round(cup_high, 2),
     }
     return result, fit_score
 

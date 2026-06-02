@@ -72,10 +72,12 @@ STYLE = mpf.make_mpf_style(
 
 
 def _save(df, tf_label, symbol, res, bars, mav):
+    orig_len = len(df)
     df = df.tail(bars).copy()
     df.index.name = "Date"
     if len(df) < 10:
         return
+    bars = len(df)
 
     # Clip extreme wick outliers (>4x IQR from median) to avoid scale distortion
     import numpy as np
@@ -119,6 +121,70 @@ def _save(df, tf_label, symbol, res, bars, mav):
     )
 
     ax = axes[0]
+
+    # ── Pattern annotations helper
+    def _shade(x0, x1, color, label, alpha=0.12):
+        if x1 > x0 >= 0:
+            ax.axvspan(x0, x1, alpha=alpha, color=color, zorder=0)
+            ax.text((x0+x1)/2, ax.get_ylim()[1]*0.98, label,
+                    ha="center", va="top", fontsize=8, color=color, fontweight="bold",
+                    bbox=dict(boxstyle="round,pad=0.2", fc="#0D1117", ec=color, alpha=0.85))
+
+    pattern = res.get("pattern", "")
+    offset  = orig_len - bars
+
+    # ── Cup & Handle shading
+    cup_start    = res.get("cup_start_idx")
+    cup_end      = res.get("cup_end_idx")
+    handle_start = res.get("handle_start_idx")
+    handle_end   = res.get("handle_end_idx")
+
+    # Cup & Handle
+    if cup_start is not None and "Cup" in pattern:
+        cs = max(cup_start - offset, 0);  ce = max(cup_end - offset, 0)
+        hs = max(handle_start - offset, 0); he = min(handle_end - offset, bars-1)
+        _shade(cs, ce, "#2196F3", "CUP", alpha=0.10)
+        _shade(hs, he, "#FF9800", "HANDLE", alpha=0.15)
+
+    # Double Bottom — shade the two bottom regions
+    elif "Double Bottom" in pattern:
+        b1 = res.get("bottom_1"); b2 = res.get("bottom_2")
+        window = res.get("window", 60)
+        w_start = max(bars - window, 0)
+        w_mid   = w_start + window // 2
+        _shade(w_start, w_mid,  "#9C27B0", "BOTTOM 1", alpha=0.10)
+        _shade(w_mid,   bars-1, "#E91E63", "BOTTOM 2", alpha=0.10)
+
+    # Channel Breakout — shade the channel region
+    elif "Channel" in pattern:
+        chan_bars = min(80, bars)
+        _shade(bars - chan_bars, bars - 1, "#00BCD4", "CHANNEL", alpha=0.08)
+
+    # Triangle — shade the converging zone
+    elif "Triangle" in pattern:
+        tri_bars = min(60, bars)
+        _shade(bars - tri_bars, bars - 1, "#8BC34A", "TRIANGLE", alpha=0.08)
+
+    # Darvas Box — shade the box
+    elif "Darvas" in pattern:
+        box_bars = min(40, bars)
+        _shade(bars - box_bars, bars - 1, "#FF5722", "DARVAS BOX", alpha=0.10)
+
+    # Flag / Pennant — shade the pole + flag
+    elif "Flag" in pattern or "Pennant" in pattern:
+        flag_bars = min(30, bars)
+        pole_bars = min(60, bars)
+        _shade(bars - pole_bars, bars - flag_bars, "#FFEB3B", "POLE",   alpha=0.08)
+        _shade(bars - flag_bars, bars - 1,         "#FF9800", "FLAG",   alpha=0.12)
+
+    # Descending Wedge
+    elif "Wedge" in pattern:
+        wedge_bars = min(80, bars)
+        _shade(bars - wedge_bars, bars - 1, "#76FF03", "WEDGE", alpha=0.08)
+
+    # Break & Retest / S&R
+    elif "Retest" in pattern or "S&R" in pattern or "Breakout" in pattern:
+        _shade(max(bars - 20, 0), bars - 1, "#00E5FF", "RETEST ZONE", alpha=0.10)
 
     # ── Title
     t1   = res.get("target_1", 0)
