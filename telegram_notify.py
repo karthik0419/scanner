@@ -91,9 +91,17 @@ def format_message(df, total_scanned, csv_file):
         emoji   = pattern_emoji(pattern)
         medal   = medals[i] if i < len(medals) else "▪️"
 
+        tf     = row.get("timeframe", "-")
+        sector = row.get("sector", "")
+        signal = row.get("sector_signal", "")
+        tf_icon = "📅 Monthly" if tf == "Monthly" else "📆 Weekly" if tf == "Weekly" else "📊 Daily"
+        sec_icon = "🔥" if signal == "BOOM" else "↑" if signal == "RISING" else "↓" if signal == "COOLING" else "🔴" if signal == "WEAK" else ""
+        sector_line = f"🏭 {sector} {sec_icon} {signal}" if sector and sector != "Unknown" else ""
+
         lines += [
             f"━━━━━━━━━━━━━━━━━━━",
             f"{medal} <b>{symbol}</b> | Score: {score} | {emoji} {pattern}",
+            f"{tf_icon}" + (f"  |  {sector_line}" if sector_line else ""),
             f"💰 CMP: ₹{cmp:,.2f}  |  Entry: ₹{breakout:,.2f}",
             f"🛑 Stop: ₹{stop:,.2f}  |  🎯 Target: ₹{target:,.2f}",
             f"📈 Upside: {upside}%  |  RR: {rr}x",

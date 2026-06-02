@@ -96,10 +96,17 @@ def analyse_stock(symbol, df=None, df_nifty=None):
     # 52-week position: how far from 52w high (lower = closer to breakout)
     dist_52h = round((h52 - cmp) / h52 * 100, 2)  # % below 52w high
 
-    # ── Pattern detection (priority order) ──
+    # ── Pattern detection (priority order) — track timeframe ──
     df_weekly = _resample_weekly(df)
-    pattern_result = (
-        detect_cup_handle_weekly(df_weekly) or
+    try:
+        from patterns.cup_handle_monthly import detect_cup_handle_monthly, resample_monthly
+        df_monthly = resample_monthly(df)
+        monthly_result = detect_cup_handle_monthly(df_monthly)
+    except Exception:
+        monthly_result = None
+
+    weekly_result  = detect_cup_handle_weekly(df_weekly)
+    daily_result   = (
         detect_cup_handle(df) or
         detect_break_retest(df) or
         detect_descending_channel(df) or
@@ -109,6 +116,19 @@ def analyse_stock(symbol, df=None, df_nifty=None):
         detect_sr_levels(df) or
         detect_breakout(df)
     )
+
+    if monthly_result:
+        pattern_result = monthly_result
+        timeframe = "Monthly"
+    elif weekly_result:
+        pattern_result = weekly_result
+        timeframe = "Weekly"
+    elif daily_result:
+        pattern_result = daily_result
+        timeframe = "Daily"
+    else:
+        pattern_result = None
+        timeframe = "-"
 
     pattern = pattern_result["pattern"] if pattern_result else "No Pattern"
     # For no-pattern stocks use recent 20-day high as breakout (realistic near-term resistance)
@@ -244,6 +264,7 @@ def analyse_stock(symbol, df=None, df_nifty=None):
         "dist_52h_%":     dist_52h,
         "atr":            round(atr_val, 2),
         "score":          round(score, 1),
+        "timeframe":      timeframe,
         "sector":         sector_name,
         "sector_signal":  sector_signal,
         "reasons":        " | ".join(reasons),
