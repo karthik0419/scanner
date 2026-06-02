@@ -1,5 +1,6 @@
 # Cache and generated output
 cache/
+results/
 today_universe.txt
 screener_log.txt
 *.csv
