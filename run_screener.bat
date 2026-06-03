@@ -2,7 +2,7 @@
 cd /d "C:\Users\91814\Desktop\claude\scanner"
 
 echo ============================================
-echo   DAILY SWING SCREENER — Enhanced
+echo   DAILY SWING SCREENER — Enhanced + Volume Alert
 echo   %date% %time%
 echo ============================================
 echo.
@@ -43,11 +43,18 @@ if errorlevel 1 (
 )
 
 echo.
-echo [4/4] Sending top 5 setups to Telegram...
+echo [4/5] Checking volume surges on previously flagged stocks...
+python -X utf8 volume_alert.py
+if errorlevel 1 (
+    echo WARNING: Volume alert check failed.
+)
+
+echo.
+echo [5/5] Sending top 10 setups to Telegram...
 for /f "tokens=*" %%f in ('python -c "import glob,os; files=sorted(glob.glob('results/results_*.csv'),reverse=True); print(files[0] if files else '')"') do set LATEST_CSV=%%f
 for /f %%c in ('python -c "with open(\"today_universe.txt\") as f: lines=[l.strip() for l in f if l.strip() and not l.startswith(\"#\")]; print(len(lines))"') do set SCANNED=%%c
 
-python -X utf8 telegram_notify.py --csv %LATEST_CSV% --top 5 --scanned %SCANNED%
+python -X utf8 telegram_notify.py --csv %LATEST_CSV% --top 10 --scanned %SCANNED%
 if errorlevel 1 (
     echo WARNING: Telegram notification failed. Results are still saved.
 )
