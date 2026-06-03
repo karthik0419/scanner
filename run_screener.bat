@@ -7,7 +7,7 @@ echo   %date% %time%
 echo ============================================
 echo.
 
-echo [1/4] Building today's universe (live NSE + momentum)...
+echo [1/5] Building today's universe (live NSE + momentum)...
 python stock_universe.py --top 150
 if errorlevel 1 (
     echo ERROR: stock_universe.py failed.
@@ -16,7 +16,7 @@ if errorlevel 1 (
 )
 
 echo.
-echo [2/4] Running swing screener on today's universe...
+echo [2/5] Running swing screener on today's universe...
 python may_screener.py --stocks today_universe.txt --top 15 --min-score 30
 if errorlevel 1 (
     echo ERROR: may_screener.py failed.
@@ -25,7 +25,7 @@ if errorlevel 1 (
 )
 
 echo.
-echo [3/4] Generating charts (Daily + Weekly + Monthly)...
+echo [3/5] Generating charts (Daily + Weekly + Monthly)...
 for /f "tokens=*" %%f in ('python -c "import glob; files=sorted(glob.glob('results/results_*.csv'),reverse=True); print(files[0] if files else '')"') do set CHART_CSV=%%f
 python -X utf8 -c "
 import csv, sys, os
