@@ -26,7 +26,7 @@ if errorlevel 1 (
 
 echo.
 echo [3/5] Generating charts (Daily + Weekly + Monthly)...
-for /f "tokens=*" %%f in ('python -c "import glob; files=sorted(glob.glob('results/results_*.csv'),reverse=True); print(files[0] if files else '')"') do set CHART_CSV=%%f
+for /f "tokens=*" %%f in ('python -c "import glob; files=sorted([f for f in glob.glob('results/results_*.csv') if '_all' not in f],reverse=True); print(files[0] if files else '')"') do set CHART_CSV=%%f
 python -X utf8 -c "
 import csv, sys, os
 sys.path.insert(0,'.')
@@ -51,7 +51,7 @@ if errorlevel 1 (
 
 echo.
 echo [5/5] Sending top 10 setups to Telegram...
-for /f "tokens=*" %%f in ('python -c "import glob,os; files=sorted(glob.glob('results/results_*.csv'),reverse=True); print(files[0] if files else '')"') do set LATEST_CSV=%%f
+for /f "tokens=*" %%f in ('python -c "import glob; files=sorted([f for f in glob.glob('results/results_*.csv') if '_all' not in f],reverse=True); print(files[0] if files else '')"') do set LATEST_CSV=%%f
 for /f %%c in ('python -c "with open(\"today_universe.txt\") as f: lines=[l.strip() for l in f if l.strip() and not l.startswith(\"#\")]; print(len(lines))"') do set SCANNED=%%c
 
 python -X utf8 telegram_notify.py --csv %LATEST_CSV% --top 10 --scanned %SCANNED%

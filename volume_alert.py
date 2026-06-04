@@ -60,7 +60,7 @@ def send_telegram(token, chat_id, text):
 def load_past_setups():
     """Load all flagged setups from last LOOKBACK_DAYS scan CSVs."""
     setups = {}  # symbol -> {pattern, score, status, cmp, date}
-    files = sorted(glob.glob(os.path.join(RESULTS_DIR, "results_*.csv")), reverse=True)
+    files = sorted([f for f in glob.glob(os.path.join(RESULTS_DIR, "results_*.csv")) if "_all" not in f], reverse=True)
     for f in files[:LOOKBACK_DAYS * 2]:  # allow for multiple runs per day
         try:
             date_str = os.path.basename(f).replace("results_","").replace(".csv","")[:10]

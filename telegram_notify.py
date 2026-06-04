@@ -46,7 +46,7 @@ def send_message(token, chat_id, text):
         return False
 
 def latest_csv():
-    files = sorted(glob.glob("results_*.csv"), reverse=True)
+    files = sorted([f for f in glob.glob("results/results_*.csv") if "_all" not in f], reverse=True)
     return files[0] if files else None
 
 def pattern_emoji(pattern):
