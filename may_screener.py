@@ -318,6 +318,7 @@ def main():
     print(f"Scanning {len(symbols)} stocks for May 2026 swing setups...\n")
 
     results = []
+    all_results = []  # all stocks with any valid pattern (extended bench)
     for sym in symbols:
         print(f"  {sym}...", end=" ", flush=True)
         try:
@@ -326,6 +327,9 @@ def main():
             if res and res["score"] >= args.min_score:
                 results.append(res)
                 print(f"  FOUND score={res['score']} | {res['pattern']} | RR={res['rr']} | upside={res['upside_%']}%")
+            elif res and res["pattern"] != "No Pattern":
+                all_results.append(res)
+                print("skip")
             else:
                 print("skip")
         except Exception as e:
@@ -337,6 +341,14 @@ def main():
 
     df = pd.DataFrame(results).sort_values("score", ascending=False).head(args.top)
     df.to_csv(args.output, index=False)
+
+    # Save extended list — all stocks with a pattern (bench for manual review)
+    all_combined = results + all_results
+    if all_combined:
+        df_all = pd.DataFrame(all_combined).sort_values("score", ascending=False)
+        all_output = args.output.replace(".csv", "_all.csv")
+        df_all.to_csv(all_output, index=False)
+        print(f"  Extended list  : {all_output}  ({len(df_all)} stocks)")
 
     print(f"\n{'='*75}")
     print(f"  TOP {len(df)} SWING SETUPS — MAY 2026")
