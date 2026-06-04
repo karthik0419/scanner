@@ -277,7 +277,7 @@ def analyse_stock(symbol, df=None, df_nifty=None):
 
 def load_stocks(path):
     try:
-        with open(path) as f:
+        with open(path, encoding="utf-8", errors="ignore") as f:
             return [l.strip() for l in f if l.strip() and not l.startswith("#")]
     except FileNotFoundError:
         return []
