@@ -51,10 +51,7 @@ if errorlevel 1 (
 
 echo.
 echo [5/5] Sending top 10 setups to Telegram...
-for /f "tokens=*" %%f in ('python -c "import glob; files=sorted([f for f in glob.glob('results/results_*.csv') if '_all' not in f],reverse=True); print(files[0] if files else '')"') do set LATEST_CSV=%%f
-for /f %%c in ('python -c "with open(\"today_universe.txt\") as f: lines=[l.strip() for l in f if l.strip() and not l.startswith(\"#\")]; print(len(lines))"') do set SCANNED=%%c
-
-python -X utf8 telegram_notify.py --csv %LATEST_CSV% --top 10 --scanned %SCANNED%
+python -X utf8 telegram_notify.py --top 10
 if errorlevel 1 (
     echo WARNING: Telegram notification failed. Results are still saved.
 )
