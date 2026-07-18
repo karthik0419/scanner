@@ -37,7 +37,7 @@ def main():
         print("Missing telegram credentials in .env")
         return
 
-    msg = f"""<b>🎯 PORTFOLIO ENTRY LOG — 27 May 2026</b>
+    msg = f"""<b>🎯 [V1] PORTFOLIO ENTRY LOG — 27 May 2026</b>
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 <b>💼 Capital deployed:</b> ₹49,773 / ₹50,000

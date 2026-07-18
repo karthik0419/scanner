@@ -71,7 +71,7 @@ def format_message(df, total_scanned, csv_file):
     total_setups = len(df)
 
     lines = [
-        f"<b>🔍 SWING SCAN — {today}</b>",
+        f"<b>🔍 [V1] SWING SCAN — {today}</b>",
         f"📊 Scanned: {total_scanned} stocks | Found: {total_setups} setups",
         "",
     ]

@@ -112,7 +112,7 @@ def format_message(surges):
         return None
 
     lines = [
-        "🚨 <b>VOLUME SURGE ALERT</b>",
+        "🚨 <b>[V1] VOLUME SURGE ALERT</b>",
         f"Previously flagged setups showing unusual activity\n",
     ]
     for s in surges:
